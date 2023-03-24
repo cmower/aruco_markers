@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="aruco_markers",
-    description="A compact Python library for ArUCo marker detection.",
+    description="A compact Python package for handling ArUCo markers.",
     version="1.0.0",
     author="Christopher E. Mower",
     author_email="christopher.mower@kcl.ac.uk",
@@ -12,4 +12,10 @@ setup(
             "aruco = aruco_markers.main:main",
         ],
     },
+    install_requires=[
+        "opencv-contrib-python",
+        "numpy",
+        "reportlab",
+        "attrs",
+    ],
 )

@@ -1,0 +1,40 @@
+name: Build documentation
+
+on: [pull_request, push]
+
+jobs:
+
+  docs:
+
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+
+      - uses: actions/checkout@v2.3.4
+
+      - run: |
+          sudo apt install doxygen graphviz -y
+
+      - run: |
+          cd doc/
+          python gen_mainpage.py
+          doxygen
+
+      - run: |
+          cd doc/html
+          git init
+          touch .nojekyll
+          git add -A
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m 'deploy'
+
+      - uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force: true
+          directory: ./doc/html

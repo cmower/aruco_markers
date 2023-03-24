@@ -130,3 +130,8 @@ dmypy.json
 
 # Backup directory
 backup/
+
+# Ignore documentation build files
+doc/html
+doc/latex
+doc/mainpage.md

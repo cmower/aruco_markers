@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use `aruco_markers` in your work, please consider citing the following."
+authors:
+- family-names: "Mower"
+  given-names: "Christopher E."
+title: "aruco_markers: A Compact Python Package for handling ArUCo markers"
+url: "https://github.com/cmower/aruco_markers"
+date-released: 2023-03-25

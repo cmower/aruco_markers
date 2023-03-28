@@ -10,6 +10,11 @@ The `aruco_markers` package is a compact Python toolkit designed to manage ArUCo
 It serves as a streamlined interface for the OpenCV aruco module and offers a range of capabilities through both a command line interface and a simplified library interface.
 For more information, refer to the accompanying documentation.
 
+* Code: [https://github.com/cmower/aruco_markers](https://github.com/cmower/aruco_markers)
+* Documentation: [https://cmower.github.io/aruco_markers/](https://cmower.github.io/aruco_markers/)
+* PyPI: [https://pypi.org/project/aruco-markers/](https://pypi.org/project/aruco-markers/)
+* Issues: [https://github.com/cmower/aruco_markers/issues](https://github.com/cmower/aruco_markers/issues)
+
 # Install
 
 ## From PyPI

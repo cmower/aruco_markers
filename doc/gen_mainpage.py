@@ -3,7 +3,18 @@ import pathlib
 
 class LineFixer:
     def fix(self, line):
-        line = line.replace('doc/image/', '')
+        line = line.replace(
+            "https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker.png",
+            "marker.png",
+        )
+        line = line.replace(
+            "https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/checkerboard.png",
+            "checkerboard.png",
+        )
+        line = line.replace(
+            "https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker_ex.png",
+            "marker_ex.png",
+        )
         return line
 
 

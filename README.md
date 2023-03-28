@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="doc/image/marker.png" width="60" align="right">
+  <img src="https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker.png" width="60" align="right">
 </p>
 
 # aruco_markers
@@ -144,7 +144,7 @@ This is a 8-by-6 checkerboard, where each square has length 25mm when printed on
 ### Collect data
 
 <p align="center">
-  <img src="doc/image/checkerboard.png" width="60%" align="center">
+  <img src="https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/checkerboard.png" width="60%" align="center">
 </p>
 
 To gather data for calibration, execute the `aruco collect` command.
@@ -235,7 +235,7 @@ This will randomly sample `MAXFILES` files from the file names (uniform distribu
 ## View pose detection from a camera feed
 
 <p align="center">
-  <img src="doc/image/marker_ex.png" width="60%" align="center">
+  <img src="https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker_ex.png" width="60%" align="center">
 </p>
 
 After calibrating a camera, you can use the `aruco detect` command to display the position of a marker.
@@ -271,6 +271,7 @@ In a new terminal:
    - (ssh) `$ git clone git@github.com:cmower/aruco_markers.git`, or
    - (https) `$ git clone https://github.com/cmower/aruco_markers.git`
 2. Change directory: `$ cd aruco_markers/doc`
+3. Generate the main page: `$ python gen_mainpage.py`
 3. Install doxygen: `$ sudo apt install doxygen`
 4. Build documentation: `$ doxygen`
 5. View documentation:

@@ -20,7 +20,10 @@ setup(
         ],
     },
     project_urls={
+        "Homepage": "https://cmower.github.io/aruco_markers/",
+        "Documentation": "https://cmower.github.io/aruco_markers/",
         "Bug Tracker": "https://github.com/cmower/aruco_markers/issues",
+        "Source": "https://github.com/cmower/aruco_markers",
     },
     install_requires=[
         "opencv-contrib-python",

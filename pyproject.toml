@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aruco_markers"
+version = "1.0.0"
+authors = [
+  { name="Christopher E. Mower", email="christopher.mower@kcl.ac.uk" },
+]
+description = " A compact Python package for handling ArUCo markers."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://cmower.github.io/aruco_markers/"
+"Documentation" = "https://cmower.github.io/aruco_markers/"
+"Bug Tracker" = "https://github.com/cmower/aruco_markers/issues"
+"Source" = "https://github.com/cmower/aruco_markers"

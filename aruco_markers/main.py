@@ -140,6 +140,18 @@ def generate_main(argv):
         ),
     )
 
+    label_param_default = ""
+    parser.add_argument(
+        "-l",
+        "--label",
+        type=str,
+        default=label_param_default,
+        help=helptxt(
+            "Add an optional label to the marker.",
+            default=label_param_default,
+        ),
+    )
+
     parser.add_argument(
         "--noshow",
         action="store_true",
@@ -161,7 +173,13 @@ def generate_main(argv):
 
     # Create marker object and optionally show/save
     marker = Marker(
-        args.dict, args.id, args.sidepixels, args.borderbits, args.width, args.pad
+        args.dict,
+        args.id,
+        args.sidepixels,
+        args.borderbits,
+        args.width,
+        args.pad,
+        args.label,
     )
 
     if not args.noshow:

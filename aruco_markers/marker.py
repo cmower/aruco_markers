@@ -56,6 +56,9 @@ class Marker:
     ## Padding around marker image when positioned on an A4 pdf in millimeters.
     pad: int
 
+    ## Label for the marker (optional)
+    label: float = None
+
     @property
     def file_name(self) -> str:
         """! File anme for the marker when generated."""
@@ -65,7 +68,11 @@ class Marker:
         b = self.borderbits
         w = self.width
         p = self.pad
-        return f"marker_dict_{d}_id_{i}_sidepixels_{s}_borderbits_{b}_width_{w}_pad_{p}"
+        l = f"_label_{self.label}" if self.label else ""
+        return (
+            f"marker_dict_{d}_id_{i}_sidepixels_{s}_borderbits_{b}_width_{w}_pad_{p}"
+            + l
+        )
 
     @property
     def dictionary(self):

@@ -1,18 +1,38 @@
+import os
 import re
+import math
 import time
 import pickle
 import zipfile
 import random
 import datetime
 from dataclasses import dataclass
-from typing import Tuple, List
+from typing import Tuple, List, Union, Any
 
 import cv2
+
 import numpy as np
+
+np.set_printoptions(
+    precision=3, suppress=True, linewidth=os.get_terminal_size().columns
+)
+DBL_EPSILON = np.finfo(np.float64).eps
+
+import matplotlib.pyplot as plt
+
+plt.rcParams["text.usetex"] = True
+
 
 from .marker import Marker
 from .utils import mkdir, join_path, listdir, remove
 from .camera import CameraViewer, CameraViewerCallback, Camera
+
+
+def _pdist(p1, p2):
+    """
+    Distance bwt two points. p1 = (x, y), p2 = (x, y)
+    """
+    return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 
 @dataclass
@@ -30,7 +50,7 @@ class Checkerboard:
     height: int
 
     # Size of each square on the checkerboard in mm.
-    squaresize: int  
+    squaresize: int
 
     @property
     def size(self) -> Tuple[int]:
@@ -88,7 +108,7 @@ class Checkerboard:
 class CalibrationDataCollectionCallback(CameraViewerCallback):
 
     """! Callback for the CameraViewer class, that collects data."""
-    
+
     def __init__(self, checkerboard: Checkerboard):
         """! Initializer for the CalibrationDataCollectionCallback class."""
         super().__init__()
@@ -117,7 +137,9 @@ class CalibrationDataCollectionCallback(CameraViewerCallback):
         return img
 
 
-def collect_data(camera: Camera, checkerboard: Checkerboard, report_loop_duration: bool) -> None:
+def collect_data(
+    camera: Camera, checkerboard: Checkerboard, report_loop_duration: bool
+) -> None:
     """! Runs the data collection process."""
     # Define a callback for the data collection
     callback = CalibrationDataCollectionCallback(checkerboard)
@@ -156,7 +178,9 @@ def downsample_file_names(file_names: List[str], max_num_files: int) -> List[str
     )
 
 
-def load_gray_image_from_zip(zipf: zipfile.ZipFile, file_name: str, path: str) -> np.ndarray:
+def load_gray_image_from_zip(
+    zipf: zipfile.ZipFile, file_name: str, path: str
+) -> np.ndarray:
     """! Loads the gray scale image from the zip file."""
     # Extract the file from the zip
     zipf.extract(file_name, path=path)
@@ -172,15 +196,263 @@ def load_gray_image_from_zip(zipf: zipfile.ZipFile, file_name: str, path: str) -
     return img
 
 
-def calibrate(camera_name: str, max_num_files: int) -> None:
+@dataclass
+class cvCalibrateInputArgs:
+    objectPoints: List[np.ndarray]
+    imagePoints: List[np.ndarray]
+    imageSize: Tuple[int]
+    cameraMatrix: Union[np.ndarray, None]
+    distCoeffs: Union[np.ndarray, None]
+    rvecs: Union[Tuple[np.ndarray], None]
+    tvecs: Union[Tuple[np.ndarray], None]
+    stdDeviationsIntrinsics: Union[np.ndarray, None]
+    stdDeviationsExtrinsics: Union[np.ndarray, None]
+    perViewErrors: Union[np.ndarray, None]
+    flags: int
+    criteria: Tuple[Union[float, int]]
+
+    @property
+    def args(self):
+        return [
+            self.objectPoints,
+            self.imagePoints,
+            self.imageSize,
+            self.cameraMatrix,
+            self.distCoeffs,
+            self.rvecs,
+            self.tvecs,
+            self.stdDeviationsIntrinsics,
+            self.stdDeviationsExtrinsics,
+            self.perViewErrors,
+            self.flags,
+            self.criteria,
+        ]
+
+
+@dataclass
+class cvCalibrateOutput:
+    output: Tuple[Any]
+
+    @property
+    def rmsError(self):
+        return self.output[0]
+
+    @property
+    def cameraMatrix(self):
+        return self.output[1]
+
+    @property
+    def distCoeffs(self):
+        return self.output[2]
+
+    @property
+    def stdDeviationsIntrinsics(self):
+        return self.output[5]
+
+    @property
+    def perViewErrors(self):
+        return self.output[7]
+
+    @property
+    def avgViewError(self):
+        return np.mean(self.perViewErrors)
+
+
+class Calibrator:
+    def __init__(
+        self,
+        object_points,
+        image_points,
+        image_size,
+        plot_stats=False,
+        max_iter=30,
+        eps=None,
+    ):
+        self.plot_stats = plot_stats
+        self.max_iter = max_iter
+
+        # Setup input args
+        eps = eps if eps is not None else DBL_EPSILON
+        max_iter = 1 if plot_stats else max_iter
+        criteria = (cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, max_iter, eps)
+
+        self.input = cvCalibrateInputArgs(
+            object_points,
+            image_points,
+            image_size,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            criteria,
+        )
+
+    def run(self):
+        t0 = time.time()
+
+        if self.plot_stats:
+            iterations = list(range(1, self.max_iter + 1))
+            iter_durations = []
+            data = []
+            for it in iterations:
+                print(
+                    "\rCalibrating ... " + str(it) + "/" + str(self.max_iter),
+                    end="",
+                    flush=True,
+                )
+
+                tt0 = time.time()
+
+                # Calibrate one step
+                output = cvCalibrateOutput(
+                    cv2.calibrateCameraExtended(*self.input.args)
+                )
+                data.append(output)
+
+                # Update input args
+                self.input.cameraMatrix = output.cameraMatrix
+                self.input.distCoeffs = output.distCoeffs
+                self.input.flags = cv2.CALIB_USE_INTRINSIC_GUESS
+
+                tt1 = time.time()
+
+                iter_durations.append(tt1 - tt0)
+
+        else:
+            print("Calibrating ...", end=" ", flush=True)
+            output = cvCalibrateOutput(cv2.calibrateCameraExtended(*self.input.args))
+            print("done", end="")
+
+        t1 = time.time()
+
+        # Report duration
+        duration = t1 - t0
+
+        if duration < 1.0:
+            calib_duration = f"{1e6 * duration:.3f} microseconds."
+        elif duration > 60.0:
+            calib_duration = str(datetime.timedelta(seconds=duration)) + "."
+        else:
+            calib_duration = f"{duration:.3f} seconds."
+        print("\n\n\033[95mCalibration took\033[0m " + calib_duration, end="\n\n")
+
+        print("\033[95mCamera Matrix:\033[0m")
+        print(output.cameraMatrix)
+
+        print("\n\033[95mDistortion Coeficients:\033[0m")
+        print(output.distCoeffs.flatten())
+
+        print("\n\033[95mrmsError:\033[0m")
+        print(f"{output.rmsError:.3f}")
+
+        print("\n\033[95mstdDeviationsIntrinsics:\033[0m")
+        print(output.stdDeviationsIntrinsics.flatten())
+
+        print("\n\033[95mAverage View Error:\033[0m")
+        print(f"{output.avgViewError:.3f}")
+
+        if self.plot_stats:
+            # Plot stdDeviationsIntrinsics
+            intrinsics_labels = [
+                r"f_x",
+                r"f_y",
+                r"c_x",
+                r"c_y",
+                r"k_1",
+                r"k_2",
+                r"p_1",
+                r"p_2",
+                r"k_3",
+                r"k_4",
+                r"k_5",
+                r"k_6",
+                r"s_1",
+                r"s_2",
+                r"s_3",
+                r"s_4",
+                r"\tau_1",
+                r"\tau_2",
+            ]
+            intrinsics_labels = [r"$" + label + r"$" for label in intrinsics_labels]
+
+            n_intrinsics = len(intrinsics_labels)
+
+            fig, ax = plt.subplots(
+                nrows=3, ncols=6, sharex=True, layout="constrained", figsize=(20, 10)
+            )
+
+            for idx, (label, a) in enumerate(zip(intrinsics_labels, ax.flatten())):
+                a.plot(
+                    iterations,
+                    [d.stdDeviationsIntrinsics[idx] for d in data],
+                    "-x",
+                    linewidth=2,
+                    color="blue",
+                    markersize=3,
+                )
+                a.grid()
+                a.set_ylabel(label, fontsize=20)
+
+            for i in range(6):
+                ax[-1, i].set_xlabel("Iterations", fontsize=20)
+
+            # Plot RMS error
+            fig, ax = plt.subplots(
+                nrows=3, sharex=True, layout="constrained", figsize=(10, 10)
+            )
+            ax[0].plot(iterations, [d.rmsError for d in data])
+            ax[0].set_ylabel("RMS Error", fontsize=20)
+
+            ax[1].plot(
+                iterations,
+                [d.avgViewError for d in data],
+                "-x",
+                linewidth=2,
+                markersize=3,
+                color="blue",
+            )
+            ax[1].set_ylabel("Average View Errror", fontsize=20)
+
+            ax[2].plot(
+                iterations,
+                1e3 * np.array(iter_durations),
+                "-x",
+                linewidth=2,
+                markersize=3,
+                color="blue",
+            )
+            ax[2].set_ylabel("Iteration Duration (ms)", fontsize=20)
+
+            ax[-1].set_xlabel("Iterations", fontsize=20)
+
+            for a in ax.flatten():
+                a.grid()
+
+            # Show plots
+            plt.show()
+
+        return output
+
+
+def calibrate(
+    camera_name: str, max_num_files: int, plot: bool, max_iter: int, eps: float
+) -> None:
     """! Calibrate the camera. This assumes the data is already collected."""
-    
-    # termination criteria
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+    # termination criteria for cv2.cornerSubPix
+    criteria = (
+        cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS,
+        50,
+        DBL_EPSILON,
+    )
 
     # Arrays to store object points and image points from all the images.
-    objpoints = []  # 3d point in real world space
-    imgpoints = []  # 2d points in image plane.
+    object_points = []  # 3d point in real world space
+    image_points = []  # 2d points in image plane.
 
     # Iterate over file names in data_path
     print("Processing checkerboard images ...")
@@ -214,10 +486,37 @@ def calibrate(camera_name: str, max_num_files: int) -> None:
 
             # If found, add object points, image points (after refining them)
             if found:
-                objpoints.append(objp)
+                object_points.append(objp)
 
-                corners2 = cv2.cornerSubPix(img, corners, (11, 11), (-1, -1), criteria)
-                imgpoints.append(corners2)
+                # Use a radius of half the minimum distance between
+                # corners. This should be large enough to snap to the
+                # correct corner, but not so large as to include a
+                # wrong corner in the search window.
+                min_distance = float("inf")
+                for row in range(checkerboard.height):
+                    for col in range(checkerboard.width - 1):
+                        index = row * checkerboard.height + col
+                        min_distance = min(
+                            min_distance,
+                            _pdist(corners[index, 0], corners[index + 1, 0]),
+                        )
+                for row in range(checkerboard.height - 1):
+                    for col in range(checkerboard.width):
+                        index = row * checkerboard.height + col
+                        min_distance = min(
+                            min_distance,
+                            _pdist(
+                                corners[index, 0],
+                                corners[index + checkerboard.width, 0],
+                            ),
+                        )
+                radius = int(math.ceil(min_distance * 0.5))
+
+                # Refine corners
+                corners2 = cv2.cornerSubPix(
+                    img, corners, (radius, radius), (-1, -1), criteria
+                )
+                image_points.append(corners2)
 
                 print("success!")
 
@@ -230,36 +529,25 @@ def calibrate(camera_name: str, max_num_files: int) -> None:
                 )
 
     # Ensure we have data to process
-    if len(imgpoints) == 0:
+    if len(image_points) == 0:
         raise RuntimeError("No usable data.")
-    print("Done!")
 
     # Compute calibration parameters
-    print("Calibrating camera ...", end=" ", flush=True)
-    t0 = time.time()
-    ret, mtx, dist, _, _ = cv2.calibrateCamera(
-        objpoints, imgpoints, img.shape[::-1], None, None
-    )
-    t1 = time.time()
-    print("done!")
-    duration = t1 - t0
-
-    if duration < 1.0:
-        calib_duration = f"{1e6 * duration:.3f} microseconds"
-    elif duration > 60.0:
-        calib_duration = str(datetime.timedelta(seconds=duration))
-    else:
-        calib_duration = f"{duration:.4f} seconds"
-    print("Calibration took " + calib_duration)
-
-    print("Camera matrix:\n", mtx, "\n\nDistorion Cooeficients:\n", dist)
+    output = Calibrator(
+        object_points,
+        image_points,
+        img.shape[::-1],
+        plot_stats=plot,
+        max_iter=max_iter,
+        eps=eps,
+    ).run()
 
     # Save parameters
-    if ret:
-        camera_parameters = {"camera_matrix": mtx, "distortion_coefficients": dist}
-        fullpath = join_path(path, "camera_parameters.dat")
-        with open(fullpath, "wb") as f:
-            pickle.dump(camera_parameters, f)
-            print("Saved", fullpath)
-    else:
-        raise RuntimeError("Unable to calibrate camera.")
+    camera_parameters = {
+        "camera_matrix": output.cameraMatrix,
+        "distortion_coefficients": output.distCoeffs,
+    }
+    fullpath = join_path(path, "camera_parameters.dat")
+    with open(fullpath, "wb") as f:
+        pickle.dump(camera_parameters, f)
+        print("\nSaved", fullpath)

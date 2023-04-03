@@ -293,12 +293,52 @@ def calibrate_main(argv):
         ),
     )
 
+    parser.add_argument(
+        "-p",
+        "--plot",
+        action="store_true",
+        default=False,
+        help=helptxt(
+            "Plot statistics.",
+            "Note, this changes the algorithm used to estimate the camera parameters.",
+            "The calibration uses the LM algorithm as an optimizer which adapts the step length on each iteration.",
+            "The difference when plotting is that the step length is constant.",
+            "This is because, in order to collect the evolution of the algorithm outputs, we only perform 1 iteration of the algorithm.",
+            "The initial guess for the optimization is then set as the previous solution.",
+        ),
+    )
+
+    param_maxiter_default = 50
+    parser.add_argument(
+        "-mi",
+        "--maxiter",
+        type=int,
+        default=param_maxiter_default,
+        help=helptxt(
+            "The maximum number of iterations for the calibration procedure.",
+            default=param_maxiter_default,
+        ),
+    )
+
+    param_eps_default = -1.0
+    parser.add_argument(
+        "-e",
+        "--eps",
+        type=float,
+        default=param_eps_default,
+        help=helptxt(
+            "Termination epsilon for calibration procedure. When less than or equal to zero, then the double precision machine epsilon is used.",
+            default=param_eps_default,
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     # Compute camera parameters
-    calibrate(args.cameraname, args.maxfiles)
+    eps = args.eps if args.eps > 0.0 else None
+    calibrate(args.cameraname, args.maxfiles, args.plot, max_iter=args.maxiter, eps=eps)
 
-    print("Completed calibration successfully.")
+    print("\033[92mCompleted calibration successfully.\033[0m")
 
 
 def detect_main(argv):
@@ -339,7 +379,7 @@ def detect_main(argv):
             "Marker index.",
             default=cameraindex_param_default,
         ),
-    )    
+    )
 
     parser.add_argument(
         "-r",
@@ -354,7 +394,9 @@ def detect_main(argv):
 
     # Run pose detection
     camera = cvCamera(args.cameraindex)
-    callback = DetectSingleMarkerPoseFromCameraCallback(camera, args.dict, args.markerindex)
+    callback = DetectSingleMarkerPoseFromCameraCallback(
+        camera, args.dict, args.markerindex
+    )
 
     detect_poses_from_camera(camera, callback, args.reportduration)
 

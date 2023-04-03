@@ -4,6 +4,12 @@ import time
 import cv2
 import numpy as np
 
+OPENNI2_AVAILABLE = True
+try:
+    from openni import openni2
+except ImportError:
+    OPENNI2_AVAILABLE = False
+
 
 class Camera(abc.ABC):
 
@@ -70,6 +76,51 @@ class cvCamera(Camera):
     def close(self) -> None:
         """! Close the camera interface."""
         self.camera.release()
+
+
+class OpenNICamera:
+    def __init__(self):
+        assert (
+            OPENNI2_AVAILABLE
+        ), "openni is not installed, run $ pip install aruco_markers[openni]"
+        openni2.initialize()
+        self.dev = openni2.Device.open_any()
+        self.info = self.dev.get_device_info()
+        self.color_stream = self.dev.create_color_stream()
+        self._width = 640
+        self._height = 480
+        fps = 30
+        pixel_format = openni2.c_api.OniPixelFormat.ONI_PIXEL_FORMAT_RGB888
+        self.color_stream.configure_mode(self._width, self._height, fps, pixel_format)
+        self.color_stream.start()
+
+    @property
+    def name(self):
+        vendor = self.info.vendor.decode("utf-8")
+        name = self.info.name.decode("utf-8")
+        return f"{vendor}_{name}"
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
+
+    def read(self):
+        frame = self.color_stream.read_frame()
+        img = np.ndarray(
+            (frame.height, frame.width, 3),
+            dtype=np.uint8,
+            buffer=frame.get_buffer_as_uint8(),
+        )
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        return img
+
+    def close(self):
+        self.color_stream.stop()
+        openni2.unload()
 
 
 class CameraViewerCallback(abc.ABC):

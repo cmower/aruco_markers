@@ -3,7 +3,7 @@ import argparse
 from collections import OrderedDict
 
 from .marker import Marker
-from .camera import cvCamera
+from .camera import cvCamera, OpenNICamera
 from .calibrate import collect_data, calibrate, Checkerboard
 from .detect import detect_poses_from_camera, DetectSingleMarkerPoseFromCameraCallback
 
@@ -202,6 +202,7 @@ def collect_main(argv):
         help=helptxt(
             "Camera index.",
             "This corresponds to /dev/videoN where N is the camera index.",
+            "For OPENNI, set the camera index as -1.",
             default=cameraindex_param_default,
         ),
     )
@@ -256,7 +257,12 @@ def collect_main(argv):
     args = parser.parse_args(argv)
 
     # Setup camera and checkerboard
-    camera = cvCamera(args.cameraindex)
+    if args.cameraindex >= 0:
+        camera = cvCamera(args.cameraindex)
+    elif args.cameraindex == -1:
+        camera = OpenNICamera()
+    else:
+        raise ValueError(f"Unsupported camera index: {args.cameraindex}")
     checkerboard = Checkerboard(
         camera.name.replace(" ", "-"),  # ensure no space in name
         args.width,
@@ -354,6 +360,7 @@ def detect_main(argv):
         help=helptxt(
             "Camera index.",
             "This corresponds to /dev/videoN where N is the camera index.",
+            "For OPENNI, set the camera index as -1.",
             default=cameraindex_param_default,
         ),
     )
@@ -393,7 +400,12 @@ def detect_main(argv):
     args = parser.parse_args(argv)
 
     # Run pose detection
-    camera = cvCamera(args.cameraindex)
+    if args.cameraindex >= 0:
+        camera = cvCamera(args.cameraindex)
+    elif args.cameraindex == -1:
+        camera = OpenNICamera()
+    else:
+        raise ValueError(f"Unsupported camera index: {args.cameraindex}")
     callback = DetectSingleMarkerPoseFromCameraCallback(
         camera, args.dict, args.markerindex
     )

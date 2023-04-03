@@ -186,8 +186,8 @@ class DetectSingleMarkerPoseFromCameraCallback(CameraViewerCallback):
         self.detector = load_detector(dict_name)
 
         # For debugging
-        # marker_length = 0.05  # using marker: {dict: DICT_4X4_50, id: 0}
-        # self.pose_detector = SingleMarkerPoseEstimation(camera, marker_length)
+        marker_length = 0.05  # using marker: {dict: DICT_4X4_50, id: 0}
+        self.pose_detector = SingleMarkerPoseEstimation(camera, marker_length)
 
     def call(self, img):
         """! Main callback for the DetectSingleMarkerPoseFromCameraCallback class."""
@@ -201,9 +201,9 @@ class DetectSingleMarkerPoseFromCameraCallback(CameraViewerCallback):
                 img = cv2.aruco.drawDetectedMarkers(img, (c,), np.array([ids[i]]))
 
                 # For debugging
-                # pose = self.pose_detector.estimate_marker_pose(c)
-                # print("Pose")
-                # print(" ", pose.transform())
+                pose = self.pose_detector.estimate_marker_pose(c)
+                print("Pose")
+                print(" ", pose.transform())
 
         return img
 

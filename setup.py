@@ -33,4 +33,5 @@ setup(
         "reportlab",
         "attrs",
     ],
+    extras_require={"openni": ["openni"]},
 )

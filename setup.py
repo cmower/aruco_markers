@@ -8,7 +8,7 @@ setup(
     description="A compact Python package for handling ArUCo markers.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    version="1.0.2",
+    version="1.1.0",
     author="Christopher E. Mower",
     author_email="christopher.mower@kcl.ac.uk",
     url="https://github.com/cmower/aruco_markers",

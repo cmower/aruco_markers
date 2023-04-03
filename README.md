@@ -41,7 +41,7 @@ All the functionality of the library can be accessed via
 import aruco_markers
 ```
 
-Full documentation for all the classes/functions provided can be found [here]().
+Full documentation for all the classes/functions provided can be found [here](https://cmower.github.io/aruco_markers/).
 
 # Command line interface
 

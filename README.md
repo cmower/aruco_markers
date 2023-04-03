@@ -106,7 +106,7 @@ Saved
 
 *Note*, if you have already run `aruco generate` before, then it is possible you will not see the lines acknowledging a directories creation (i.e. those starting with `Created`).
 
-The PNG file created should match the marker displayed at the top of this readme, i.e. [here](doc/marker.png).
+The PNG file created should match the marker displayed at the top of this readme, i.e. [here](https://cmower.github.io/aruco_markers/marker.png).
 
 The full list of available dictionaries are as follows.
 
@@ -268,7 +268,7 @@ This example assumes you have calibrated your camera by running `aruco collect`,
 
 # Build documentation
 
-The documentation is hosted [here]().
+The documentation is hosted [here](https://cmower.github.io/aruco_markers/).
 However, if you would like to build the documentation yourself, follow these steps.
 
 In a new terminal:

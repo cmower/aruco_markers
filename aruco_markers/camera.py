@@ -119,6 +119,22 @@ class CameraViewer:
         # Setup callback handler
         self.callback = callback
 
+    def step(self):
+
+        done = False
+        # Get image, pass through callback
+        img = self.callback(self.camera.read())
+        assert img is not None, "Remember, the 'call' method must return the image."
+
+        # Show image
+        cv2.imshow(self.window_name, img)
+
+        # Check if user quit
+        if cv2.waitKey(1) == 27:
+            done = True
+
+        return done
+
     def spin(self) -> None:
         """Call this method to start the viewer."""
         # Report to user how to quit
@@ -130,13 +146,8 @@ class CameraViewer:
             # Get time the loop starts
             t0 = time.time()
 
-            # Get image, pass through callback, and display
-            img = self.callback(self.camera.read())
-            cv2.imshow(self.window_name, img)
-
-            # Check if user quit
-            if cv2.waitKey(1) == 27:
-                done = True
+            # Step the viewer
+            done = self.step()
 
             # Get time the loop ends, compute duration, and report to user (optionally)
             t1 = time.time()

@@ -107,16 +107,16 @@ def generate_main(argv):
         help=helptxt("Size of the ArUCo tag.", default=sidepixels_param_default),
     )
 
-    borderbits_param_default = 1
-    parser.add_argument(
-        "-b",
-        "--borderbits",
-        type=int,
-        default=borderbits_param_default,
-        help=helptxt("Width of the marker border.", default=borderbits_param_default),
-    )
+    # borderbits_param_default = 1
+    # parser.add_argument(
+    #     "-b",
+    #     "--borderbits",
+    #     type=int,
+    #     default=borderbits_param_default,
+    #     help=helptxt("Width of the marker border.", default=borderbits_param_default),
+    # )
 
-    width_param_default = 500
+    width_param_default = 50
     parser.add_argument(
         "-w",
         "--width",
@@ -169,14 +169,25 @@ def generate_main(argv):
         ),
     )
 
+    parser.add_argument(
+        "--addhalfmarks",
+        action="store_true",
+        default=False,
+        help=helptxt(
+            "Add marks at the half-way marks on the pdf.",
+            "If unspecified no marks are added.",
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     # Create marker object and optionally show/save
+    borderbits = 1  # use 1 and add padding via 'pad' argument
     marker = Marker(
         args.dict,
         args.id,
         args.sidepixels,
-        args.borderbits,
+        borderbits,
         args.width,
         args.pad,
         args.label,
@@ -186,7 +197,7 @@ def generate_main(argv):
         marker.show()
 
     if args.save:
-        marker.save()
+        marker.save(add_half_marks=args.addhalfmarks)
 
 
 def collect_main(argv):

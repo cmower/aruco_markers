@@ -133,8 +133,8 @@ The full list of available dictionaries are as follows.
 * DICT_APRILTAG_36h10
 * DICT_APRILTAG_36h11
 
-When creating markers, it's often necessary to affix the printed marker onto an object.
-In such cases, knowing the mid-points of the rectangle is crucial, as manual measurements can be inaccurate.
+When creating markers, it's often the case you want to affix the printed marker onto an object.
+In such cases, knowing the mid-points of the rectangle is helpful, as manual measurements can be inaccurate.
 To simplify this process, you can use the `--addhalfmarks` flag in the `aruco generate` command while generating markers.
 The following is an example of how the output would look like when running this command.
 

@@ -132,6 +132,15 @@ The full list of available dictionaries are as follows.
 * DICT_APRILTAG_36h10
 * DICT_APRILTAG_36h11
 
+When creating markers, it's often necessary to affix the printed marker onto an object.
+In such cases, knowing the mid-points of the rectangle is crucial, as manual measurements can be inaccurate.
+To simplify this process, you can use the `--addhalfmarks` flag in the `aruco generate` command while generating markers.
+The following is an example of how the output would look like when running this command.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker-with-mark.png" width="60" align="right">
+</p>
+
 ## Calibrating a camera
 
 Calibrating a camera can be performed using the `aruco collect` and  `aruco calibrate` command.

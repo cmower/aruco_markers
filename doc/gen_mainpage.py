@@ -15,6 +15,10 @@ class LineFixer:
             "https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker_ex.png",
             "marker_ex.png",
         )
+        line = line.replace(
+            "https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker-with-mark.png",
+            "marker-with-mark.png",
+        )
         return line
 
 

@@ -66,18 +66,19 @@ usage: aruco generate [OPTIONS]
 Generate marker tags.
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -d DICT, --dict DICT  Type of ArUCo tag to generate (default is DICT_ARUCO_ORIGINAL).
-  -i ID, --id ID        Identifier of the marker. It has to be a valid id in the specified dictionary.
+  -h, --help            Show this help message and exit.
+  -d DICT, --dict DICT  The dictionary for the ArUCo marker. The default is 'DICT_ARUCO_ORIGINAL'.
+  -i ID, --id ID        Identifier of the marker. It has to be a valid id in the specified dictionary. The default is '100'.
   -s SIDEPIXELS, --sidepixels SIDEPIXELS
-                        Size of the ArUCo tag (default is 200).
-  -b BORDERBITS, --borderbits BORDERBITS
-                        Width of the marker border (default is 1).
+                        Size of the ArUCo tag. The default is '200'.
   -w WIDTH, --width WIDTH
-                        Width of the marker in millimeters (default is 500).
-  -p PAD, --pad PAD     Padding around marker image when positioned on an A4 pdf in millimeters (default is 20).
-  --noshow              Display the marker.
-  --save                Save the marker. Tags are saved in ~/aruco_markers/tags; this directory is created if it does not already exist.
+                        Width of the marker in millimeters. The default is '50'.
+  -p PAD, --pad PAD     Padding around marker in millimeters. The image is positioned on an A4 pdf. The default is '20'.
+  -l LABEL, --label LABEL
+                        Add an optional label to the marker. The default is ''.
+  --noshow              Display the marker. If unspecified the tag is shown.
+  --save                Save the marker. Tags are saved in ~/aruco_markers/tags; this directory is created when it does not already exist.
+  --addhalfmarks        Add marks at the half-way marks on the pdf. If unspecified no marks are added.
 ```
 
 Similarly for each of the other commands.

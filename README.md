@@ -138,7 +138,7 @@ To simplify this process, you can use the `--addhalfmarks` flag in the `aruco ge
 The following is an example of how the output would look like when running this command.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker-with-mark.png" width="60" align="right">
+  <img src="https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker-with-mark.png" width="60%" align="center">
 </p>
 
 ## Calibrating a camera

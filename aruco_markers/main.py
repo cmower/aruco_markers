@@ -3,7 +3,7 @@ import argparse
 from collections import OrderedDict
 
 from .marker import Marker
-from .camera import cvCamera
+from .camera import cvCamera, CameraViewer, ServerCameraViewerCallback, UDPSenderServer
 from .calibrate import collect_data, calibrate, Checkerboard
 from .detect import detect_poses_from_camera, DetectSingleMarkerPoseFromCameraCallback
 
@@ -16,6 +16,7 @@ command_descr["collect"] = "Collect data with checkerboard to calibrate a camera
 command_descr["calibrate"] = "Calibrate a camera."
 command_descr["generate"] = "Generate marker tags."
 command_descr["detect"] = "Detect marker poses from camera feed."
+command_descr["server"] = "Start a camera server."
 
 longest_cmd_name = max(command_descr, key=lambda k: len(k))
 len_longest_cmd_name = len(longest_cmd_name)
@@ -412,6 +413,60 @@ def detect_main(argv):
     detect_poses_from_camera(camera, callback, args.reportduration)
 
 
+def server_main(argv):
+    # Setup argument parser
+    parser = init_argparser("server")
+
+    cameraindex_param_default = 0
+    parser.add_argument(
+        "-c",
+        "--cameraindex",
+        type=int,
+        default=cameraindex_param_default,
+        help=helptxt(
+            "Camera index.",
+            "This corresponds to /dev/videoN where N is the camera index.",
+            default=cameraindex_param_default,
+        ),
+    )
+
+    compressionquality_param_default = 80
+    parser.add_argument(
+        "-q",
+        "--compressionquality",
+        type=int,
+        default=compressionquality_param_default,
+        help=helptxt(
+            "Quality of the compression, in range 0 to 100.",
+            default=compressionquality_param_default,
+        ),
+    )
+
+    args = parser.parse_args(argv)
+
+    # Setup camera
+    camera = cvCamera(args.cameraindex)
+
+    # Setup server and callback
+    assert 0 <= args.compressionquality <= 100, (
+        f"Compression quality argument outside of allowed range. "
+        + "Got '{args.compressionquality}' expected in range 0 to 100."
+    )
+    sender_server = UDPSenderServer()
+    callback = ServerCameraViewerCallback(
+        sender_server, compression_quality=args.compressionquality
+    )
+
+    # Start camera viewer
+    viewer = CameraViewer("server", camera, callback)
+    try:
+        viewer.spin()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        viewer.close()
+
+
 #
 # Main entry point
 #
@@ -423,6 +478,7 @@ def main():
         "collect": collect_main,
         "calibrate": calibrate_main,
         "detect": detect_main,
+        "server": server_main,
     }
 
     # Get command and arguments

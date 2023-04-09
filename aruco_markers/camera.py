@@ -94,6 +94,9 @@ class CameraViewerCallback(abc.ABC):
         self.num_calls += 1
         return self.call(img)
 
+    def close(self):
+        pass
+
 
 class NullCameraViewerCallback(CameraViewerCallback):
 
@@ -132,6 +135,9 @@ class UDPSenderServer(SenderServer):
     def send(self, img_bytes: np.ndarray):
         self.sock.sendto(img_bytes, (self.MCAST_ADDR, self.MCAST_PORT))
 
+    def shutdown(self):
+        self.sock.close()
+
 
 class ServerCameraViewerCallback(CameraViewerCallback):
 
@@ -162,6 +168,9 @@ class ServerCameraViewerCallback(CameraViewerCallback):
             self.server.send(img_bytes)
         return img
 
+    def close(self):
+        self.server.shutdown()
+
 
 class CameraViewer:
     """! A class that views images from the camera. A callback can be passed which allows you to define how images should be processed."""
@@ -180,6 +189,7 @@ class CameraViewer:
         self.camera = camera
         self.report_loop_duration = report_loop_duration
         self.show = show
+        self.is_closed = False
 
         # Setup callback handler
         self.callback = callback
@@ -221,3 +231,9 @@ class CameraViewer:
                 print(f"Duration (sec): {duration:.5f} (fits {1./duration:.2f}Hz)")
 
         cv2.destroyAllWindows()
+        self.close()
+
+    def close(self):
+        if not self.is_closed:
+            self.callback.close()
+        self.is_closed = True

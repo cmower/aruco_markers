@@ -458,7 +458,13 @@ def server_main(argv):
     )
 
     # Start camera viewer
-    CameraViewer("server", camera, callback).spin()
+    viewer = CameraViewer("server", camera, callback)
+    try:
+        viewer.spin()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        viewer.close()
 
 
 #

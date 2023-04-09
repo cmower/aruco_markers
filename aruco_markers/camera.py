@@ -1,8 +1,12 @@
+import sys
 import abc
 import time
+import socket
 
 import cv2
 import numpy as np
+
+from typing import Union
 
 
 class Camera(abc.ABC):
@@ -97,6 +101,65 @@ class NullCameraViewerCallback(CameraViewerCallback):
 
     def call(self, img: np.ndarray) -> np.ndarray:
         """! Callback that does nothing."""
+        return img
+
+
+class SenderServer(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def buffer_size(self):
+        pass
+
+    @abc.abstractmethod
+    def send(self, img_bytes):
+        """! Send image to the network."""
+        pass
+
+
+class UDPSenderServer(SenderServer):
+    MCAST_ADDR = "237.252.249.227"
+    MCAST_PORT = 1600
+
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    @property
+    def buffer_size(self):
+        return 65507  # max UDP packet size
+
+    def send(self, img_bytes: np.ndarray):
+        self.sock.sendto(img_bytes, (self.MCAST_ADDR, self.MCAST_PORT))
+
+
+class ServerCameraViewerCallback(CameraViewerCallback):
+
+    """! A callback for the camera viewer that broadcasts the images on a network."""
+
+    def __init__(self, sender_server, compression_quality=80):
+        super().__init__()
+        self.server = sender_server
+
+        quality = int(compression_quality)
+        self.encode_param = (cv2.IMWRITE_JPEG_QUALITY, quality)
+
+    def tobytes(self, img: np.ndarray) -> Union[bytes, None]:
+        """! Convert an image to a bytes."""
+        success, img_jpg = cv2.imencode(".jpg", img, self.encode_param)
+        if success:
+            data = img_jpg.tobytes()
+            if sys.getsizeof(data) <= self.server.buffer_size:
+                return data
+            else:
+                print("[WARN] image to big to send to network.")
+        else:
+            raise RuntimeError("Unable to encode image.")
+
+    def call(self, img: np.ndarray) -> np.ndarray:
+        img_bytes = self.tobytes(img)
+        if img_bytes is not None:
+            self.server.send(img_bytes)
         return img
 
 

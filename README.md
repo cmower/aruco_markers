@@ -267,6 +267,25 @@ $ aruco detect --dict DICT_4X4_50 --markerindex 0
 *Note*, the marker I use in this example has a length of 5cm.
 This information is required if you want to use the pose estimation.
 
+## Server
+
+You can run a server that will broadcast images to a UDP network.
+Simply run the following
+
+```
+$ aruco server
+```
+
+Several listeners can recieve the feeds from this server.
+The information flow is as follows.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/server-overview.png" width="60%" align="center">
+</p>
+
+To see this in action try running the example script [example/server_listener.py](https://github.com/cmower/aruco_markers/blob/master/example/server_listener.py).
+**Note**, this script can be run multiple times in separate terminals.
+
 # Marker pose estimation
 
 If you opt for the `aruco_markers` package, you can use the command line interface to produce tags and calibrate cameras.

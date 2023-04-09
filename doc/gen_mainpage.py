@@ -4,6 +4,10 @@ import pathlib
 class LineFixer:
     def fix(self, line):
         line = line.replace(
+            "https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/server-overview.png",
+            "server-overview.png",
+        )
+        line = line.replace(
             "https://raw.githubusercontent.com/cmower/aruco_markers/master/doc/image/marker.png",
             "marker.png",
         )

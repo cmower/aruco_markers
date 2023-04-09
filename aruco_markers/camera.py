@@ -109,29 +109,31 @@ class CameraViewer:
         camera: Camera,
         callback: CameraViewerCallback,
         report_loop_duration: bool = False,
+        show: bool = True,
     ):
         """! Initializer for the CameraViewer class."""
         # Setup class attributes
         self.window_name = window_name
         self.camera = camera
         self.report_loop_duration = report_loop_duration
+        self.show = show
 
         # Setup callback handler
         self.callback = callback
 
     def step(self):
-
         done = False
         # Get image, pass through callback
         img = self.callback(self.camera.read())
         assert img is not None, "Remember, the 'call' method must return the image."
 
         # Show image
-        cv2.imshow(self.window_name, img)
+        if self.show:
+            cv2.imshow(self.window_name, img)
 
-        # Check if user quit
-        if cv2.waitKey(1) == 27:
-            done = True
+            # Check if user quit
+            if cv2.waitKey(1) == 27:
+                done = True
 
         return done
 

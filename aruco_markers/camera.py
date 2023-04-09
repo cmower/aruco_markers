@@ -76,6 +76,47 @@ class cvCamera(Camera):
         self.camera.release()
 
 
+class ServerCamera(Camera):
+    ANY = "0.0.0.0"
+    MCAST_ADDR = "237.252.249.227"
+    MCAST_PORT = 1600
+    BUFFER_SIZE = 65507  # max UDP packet size
+
+    def __init__(self, name):
+        self._name = name
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        self.sock.bind((self.MCAST_ADDR, self.MCAST_PORT))
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
+        self.sock.setsockopt(
+            socket.IPPROTO_IP,
+            socket.IP_ADD_MEMBERSHIP,
+            socket.inet_aton(self.MCAST_ADDR) + socket.inet_aton(self.ANY),
+        )
+        self._img = None
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def width(self):
+        return self._img.shape[1]
+
+    @property
+    def height(self):
+        return self._img.shape[0]
+
+    def read(self):
+        data, _ = self.sock.recvfrom(self.BUFFER_SIZE)
+        img_data = np.frombuffer(data, dtype=np.uint8)
+        self._img = cv2.imdecode(img_data, cv2.IMREAD_COLOR)
+        return self._img
+
+    def close(self):
+        self.sock.close()
+
+
 class CameraViewerCallback(abc.ABC):
 
     """! Callback class for the camera viewer. You must implement the call method that inputs an image (from the interface) and outputs the image to be viewed."""

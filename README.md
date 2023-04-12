@@ -55,6 +55,7 @@ The available commands are
 * `calibrate`: Calibrate a camera.
 * `generate`: Generate marker tags.
 * `detect`: Detect marker poses from camera feed.
+* `server`: Start a camera server.
 
 The use of these commands are described below.
 In addition, you can access the documentation for ecah command by appending `--help`.
@@ -188,7 +189,7 @@ You should expect terminal output similar to the following.
 $ aruco collect --width 8 --height 6 --squaresize 25
 Press ESC to quit.
 Created HOMEDIR/aruco_markers_data
-Created HOMEDIR/home/cm22/aruco_markers_data/calibrate
+Created HOMEDIR/aruco_markers_data/calibrate
 Created HOMEDIR/aruco_markers_data/calibrate/CAMERANAME
 Data collection completed for the 'CAMERANAME' camera.
 Data saved in HOMEDIR/aruco_markers_data/calibrate/CAMERANAME

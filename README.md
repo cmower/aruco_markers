@@ -293,7 +293,7 @@ If you opt for the `aruco_markers` package, you can use the command line interfa
 However, if you require additional features, you can customize the class/method structure available in the library.
 Several methods are provided to that enable you to easily load camera parameters, and estimate marker poses.
 
-Please see the [example](example/ros1_tf_publisher.py), that shows how to implement a simple pose estimator into ROS.
+Please see the examples, that show how to implement a simple pose estimator into [ROS 1](example/ros1_tf_publisher.py)/[ROS 2](example/ros2_tf_publisher.py).
 This example assumes you have calibrated your camera by running `aruco collect`, and `aruco calibrate` prior to running this script.
 
 # Build documentation

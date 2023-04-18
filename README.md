@@ -316,6 +316,13 @@ In a new terminal:
 	 - `$ make`
 	 - Open the file called `refman.pdf`
 
+# Supported cameras
+
+Generally, any camera that is accessible by the OpenCV `VideoCapture` class is supported.
+Others include
+
+* The [ZED-Mini](https://www.stereolabs.com/zed-mini/) RGBD camera.
+
 # Citing
 
 If you use `aruco_markers` in your work, please consider citing the following.

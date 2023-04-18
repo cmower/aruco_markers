@@ -117,6 +117,37 @@ class ServerCamera(Camera):
         self.sock.close()
 
 
+class ZEDMCamera(cvCamera):
+    def __init__(self, index, side="left"):
+        super().__init__(index)
+        self.side = side
+
+        if side == "left":
+            self.extract = self.extract_left
+        elif side == "right":
+            self.extract = self.extract_right
+        else:
+            raise ValueError(f"did not recognize side '{side}'")
+
+    @property
+    def name(self):
+        return super().name + f"_zedm_{self.side}"
+
+    def extract_left(self, full_img):
+        return full_img[:, : self.width]
+
+    def extract_right(self, full_img):
+        return full_img[:, self.width :]
+
+    @property
+    def width(self):
+        return int(super().width / 2)
+
+    def read(self):
+        full_img = super().read()
+        return self.extract(full_img)
+
+
 class CameraViewerCallback(abc.ABC):
 
     """! Callback class for the camera viewer. You must implement the call method that inputs an image (from the interface) and outputs the image to be viewed."""

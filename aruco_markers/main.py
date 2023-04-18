@@ -3,7 +3,13 @@ import argparse
 from collections import OrderedDict
 
 from .marker import Marker
-from .camera import cvCamera, CameraViewer, ServerCameraViewerCallback, UDPSenderServer
+from .camera import (
+    cvCamera,
+    CameraViewer,
+    ServerCameraViewerCallback,
+    UDPSenderServer,
+    ZEDMCamera,
+)
 from .calibrate import collect_data, calibrate, Checkerboard
 from .detect import detect_poses_from_camera, DetectSingleMarkerPoseFromCameraCallback
 
@@ -265,10 +271,36 @@ def collect_main(argv):
         ),
     )
 
+    parser.add_argument(
+        "-z",
+        "--zedm",
+        action="store_true",
+        default=False,
+        help=helptxt("The camera is the ZEDm dual RGBD camera."),
+    )
+
+    rgbdside_param_default = "left"
+    parser.add_argument(
+        "-s",
+        "--rgbdside",
+        type=str,
+        choices=["left", "right"],
+        default=rgbdside_param_default,
+        help=helptxt(
+            "The side of the RGBD camera used.",
+            "When the camera is not RGBD, this argument is ignored.",
+            default=rgbdside_param_default,
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     # Setup camera and checkerboard
-    camera = cvCamera(args.cameraindex)
+
+    if not args.zedm:
+        camera = cvCamera(args.cameraindex)
+    else:
+        camera = ZEDMCamera(args.cameraindex, side=args.rgbdside)
     checkerboard = Checkerboard(
         camera.name.replace(" ", "-"),  # ensure no space in name
         args.width,
@@ -394,6 +426,14 @@ def detect_main(argv):
     )
 
     parser.add_argument(
+        "-z",
+        "--zedm",
+        action="store_true",
+        default=False,
+        help=helptxt("The camera is the ZEDm dual RGBD camera."),
+    )
+
+    parser.add_argument(
         "-r",
         "--reportduration",
         action="store_true",
@@ -402,10 +442,27 @@ def detect_main(argv):
         + "By default, the duration is not reported.",
     )
 
+    rgbdside_param_default = "left"
+    parser.add_argument(
+        "-s",
+        "--rgbdside",
+        type=str,
+        choices=["left", "right"],
+        default=rgbdside_param_default,
+        help=helptxt(
+            "The side of the RGBD camera used.",
+            "When the camera is not RGBD, this argument is ignored.",
+            default=rgbdside_param_default,
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     # Run pose detection
-    camera = cvCamera(args.cameraindex)
+    if not args.zedm:
+        camera = cvCamera(args.cameraindex)
+    else:
+        camera = ZEDMCamera(args.cameraindex, side=args.rgbdside)
     callback = DetectSingleMarkerPoseFromCameraCallback(
         camera, args.dict, args.markerindex
     )
@@ -442,10 +499,35 @@ def server_main(argv):
         ),
     )
 
+    parser.add_argument(
+        "-z",
+        "--zedm",
+        action="store_true",
+        default=False,
+        help=helptxt("The camera is the ZEDm dual RGBD camera."),
+    )
+
+    rgbdside_param_default = "left"
+    parser.add_argument(
+        "-s",
+        "--rgbdside",
+        type=str,
+        choices=["left", "right"],
+        default=rgbdside_param_default,
+        help=helptxt(
+            "The side of the RGBD camera used.",
+            "When the camera is not RGBD, this argument is ignored.",
+            default=rgbdside_param_default,
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     # Setup camera
-    camera = cvCamera(args.cameraindex)
+    if not args.zedm:
+        camera = cvCamera(args.cameraindex)
+    else:
+        camera = ZEDMCamera(args.cameraindex, side=args.rgbdside)
 
     # Setup server and callback
     assert 0 <= args.compressionquality <= 100, (

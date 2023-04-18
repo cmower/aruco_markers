@@ -281,7 +281,7 @@ def collect_main(argv):
 
     rgbdside_param_default = "left"
     parser.add_argument(
-        "-s",
+        "-rs",
         "--rgbdside",
         type=str,
         choices=["left", "right"],
@@ -444,7 +444,7 @@ def detect_main(argv):
 
     rgbdside_param_default = "left"
     parser.add_argument(
-        "-s",
+        "-rs",
         "--rgbdside",
         type=str,
         choices=["left", "right"],
@@ -509,7 +509,7 @@ def server_main(argv):
 
     rgbdside_param_default = "left"
     parser.add_argument(
-        "-s",
+        "-rs",
         "--rgbdside",
         type=str,
         choices=["left", "right"],

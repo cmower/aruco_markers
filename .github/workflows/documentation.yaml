@@ -1,6 +1,19 @@
 name: Build documentation
 
-on: [pull_request, push]
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+    # Only run the workflow when the pull request is merged
+    # and not when it is closed without merging
+    # To achieve this we can check the pull_request.merged flag
+    # and ensure it is true
+    # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#github-context
+    # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
+    # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#pull_requestmerged
+    # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#booleans
+    if: github.event.pull_request.merged == true
 
 jobs:
 

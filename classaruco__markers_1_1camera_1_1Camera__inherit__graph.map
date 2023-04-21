@@ -1,0 +1,7 @@
+<map id="aruco_markers.camera.Camera" name="aruco_markers.camera.Camera">
+<area shape="rect" id="node1" title="Base class for a Camera." alt="" coords="127,80,354,107"/>
+<area shape="rect" id="node3" href="$classaruco__markers_1_1camera_1_1ServerCamera.html" title=" " alt="" coords="5,155,223,196"/>
+<area shape="rect" id="node4" href="$classaruco__markers_1_1camera_1_1cvCamera.html" title="Interface to the OpenCV camera." alt="" coords="247,162,488,189"/>
+<area shape="rect" id="node2" title=" " alt="" coords="201,5,281,32"/>
+<area shape="rect" id="node5" href="$classaruco__markers_1_1camera_1_1ZEDMCamera.html" title=" " alt="" coords="235,244,500,271"/>
+</map>

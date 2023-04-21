@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classaruco__markers_1_1camera_1_1ServerCamera.html" title=" " alt="" coords="5,126,223,167"/>
+<area shape="rect" id="node2" href="$classaruco__markers_1_1camera_1_1Camera.html" title="Base class for a Camera." alt="" coords="271,104,497,131"/>
+<area shape="rect" id="node5" href="$classaruco__markers_1_1camera_1_1CameraViewerCallback.html" title="Callback class for the camera viewer." alt="" coords="271,155,497,197"/>
+<area shape="rect" id="node10" href="$classaruco__markers_1_1camera_1_1SenderServer.html" title=" " alt="" coords="274,253,494,294"/>
+<area shape="rect" id="node3" href="$classaruco__markers_1_1camera_1_1cvCamera.html" title="Interface to the OpenCV camera." alt="" coords="564,5,805,32"/>
+<area shape="rect" id="node4" href="$classaruco__markers_1_1camera_1_1ZEDMCamera.html" title=" " alt="" coords="872,5,1137,32"/>
+<area shape="rect" id="node6" href="$classaruco__markers_1_1calibrate_1_1CalibrationDataCollectionCallback.html" title="Callback for the CameraViewer class, that collects data." alt="" coords="562,57,807,98"/>
+<area shape="rect" id="node7" href="$classaruco__markers_1_1camera_1_1NullCameraViewerCallback.html" title="A null camera viewer callback, this does nothing in the callback." alt="" coords="584,122,785,163"/>
+<area shape="rect" id="node8" href="$classaruco__markers_1_1camera_1_1ServerCameraViewerCallback.html" title="A callback for the camera viewer that broadcasts the images on a network." alt="" coords="576,187,793,229"/>
+<area shape="rect" id="node9" href="$classaruco__markers_1_1detect_1_1DetectSingleMarkerPoseFromCameraCallback.html" title="Callback class for the Camera viewer that detects corners in an image for a single marker,..." alt="" coords="545,253,824,294"/>
+<area shape="rect" id="node11" href="$classaruco__markers_1_1camera_1_1UDPSenderServer.html" title=" " alt="" coords="561,318,809,359"/>
+</map>

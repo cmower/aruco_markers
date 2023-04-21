@@ -1,0 +1,5 @@
+<map id="aruco_markers.camera.NullCameraViewerCallback" name="aruco_markers.camera.NullCameraViewerCallback">
+<area shape="rect" id="node1" title="A null camera viewer callback, this does nothing in the callback." alt="" coords="18,169,219,211"/>
+<area shape="rect" id="node2" href="$classaruco__markers_1_1camera_1_1CameraViewerCallback.html" title="Callback class for the camera viewer." alt="" coords="5,80,232,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="81,5,157,32"/>
+</map>

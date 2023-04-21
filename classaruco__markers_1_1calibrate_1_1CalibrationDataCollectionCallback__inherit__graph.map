@@ -1,0 +1,5 @@
+<map id="aruco_markers.calibrate.CalibrationDataCollectionCallback" name="aruco_markers.calibrate.CalibrationDataCollectionCallback">
+<area shape="rect" id="node1" title="Callback for the CameraViewer class, that collects data." alt="" coords="5,169,251,211"/>
+<area shape="rect" id="node2" href="$classaruco__markers_1_1camera_1_1CameraViewerCallback.html" title="Callback class for the camera viewer." alt="" coords="15,80,241,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="90,5,166,32"/>
+</map>

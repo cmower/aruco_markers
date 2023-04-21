@@ -1,0 +1,4 @@
+<map id="aruco_markers.camera.Camera" name="aruco_markers.camera.Camera">
+<area shape="rect" id="node1" title="Base class for a Camera." alt="" coords="5,80,232,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="79,5,159,32"/>
+</map>
